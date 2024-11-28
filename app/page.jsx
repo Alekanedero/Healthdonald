@@ -1,3 +1,5 @@
+"use client";
+
 export default function Home() {
-  return <div>Healthdonald</div>;
+  return <main className="flex flex-col justify-center"></main>;
 }

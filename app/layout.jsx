@@ -1,5 +1,9 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,16 +18,26 @@ const geistMono = localFont({
 
 export const metadata = {
   title: "Healthdonald",
-  description: "App restaurant exercice",
+  description: "Start eating healthy burger.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={cn(
+          geistSans.variable,
+          geistMono.variable,
+          "antialiased",
+          "h-full bg-white dark:bg-black"
+        )}
       >
-        {children}
+        <Toaster />
+        <div className="relative m-auto flex flex-col max-h-full min-h-full max-w-md gap-2 border-x py-2">
+          <Header />
+          <div className="flex-1 overflow-hidden pt-2">{children}</div>
+          <Footer />
+        </div>
       </body>
     </html>
   );
