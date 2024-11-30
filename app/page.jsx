@@ -41,6 +41,7 @@ export default function Home() {
       <main className="flex flex-col justify-center">
         <AdminNew />
         <ItemsList />
+        <CartFooter />
       </main>
     </>
   );
