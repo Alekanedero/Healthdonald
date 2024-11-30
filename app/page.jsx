@@ -5,6 +5,7 @@ import { useUserStore } from "@/lib/store/use-user-store";
 import LoginPage from "./login/page";
 import { useRouter } from "next/navigation";
 import { ItemsList } from "@/components/features/items/items-List";
+import { FooterCart } from "@/components/features/footer-cart/FooterCart";
 
 const AdminNew = () => {
   const adminLoggedIn = useUserStore((state) => state.isAdmin);
@@ -38,10 +39,10 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex flex-col justify-center">
+      <main className="pb-8">
         <AdminNew />
         <ItemsList />
-        <CartFooter />
+        <FooterCart />
       </main>
     </>
   );

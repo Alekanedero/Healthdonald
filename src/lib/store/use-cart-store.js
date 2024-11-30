@@ -39,7 +39,7 @@ export const useCartStore = create(
             item,
           };
 
-          if (state.items[itemId]?.quantity <= 0) {
+          if (state.items[itemId]?.quantity === 0) {
             delete state.items[itemId];
           }
           return {
@@ -49,7 +49,23 @@ export const useCartStore = create(
       },
     }),
     {
-      name: "cart", // nom de la clé de stockage
+      name: "cart-store", // nom de la clé de stockage
     }
   )
 );
+
+export const useCartQuantity = () => {
+  return useCartStore((state) => {
+    return Object.values(state.items).reduce((acc, curr) => {
+      return acc + curr.quantity;
+    }, 0);
+  });
+};
+
+export const useCartPrice = () => {
+  return useCartStore((state) => {
+    return Object.values(state.items).reduce((acc, curr) => {
+      return acc + curr.quantity * curr.item.price;
+    }, 0);
+  });
+};
