@@ -4,24 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/lib/store/use-user-store";
 import LoginPage from "./login/page";
 import { useRouter } from "next/navigation";
-import { ItemsList } from "@/components/itemsList";
-
-export default function Home() {
-  const userName = useUserStore((state) => state.userName);
-
-  if (!userName) {
-    return <LoginPage />;
-  }
-
-  return (
-    <>
-      <main className="flex flex-col justify-center">
-        <AdminNew />
-        <ItemsList />
-      </main>
-    </>
-  );
-}
+import { ItemsList } from "@/components/features/items/items-List";
 
 const AdminNew = () => {
   const adminLoggedIn = useUserStore((state) => state.isAdmin);
@@ -45,3 +28,20 @@ const AdminNew = () => {
   }
   return null;
 };
+
+export default function Home() {
+  const userName = useUserStore((state) => state.userName);
+
+  if (!userName) {
+    return <LoginPage />;
+  }
+
+  return (
+    <>
+      <main className="flex flex-col justify-center">
+        <AdminNew />
+        <ItemsList />
+      </main>
+    </>
+  );
+}

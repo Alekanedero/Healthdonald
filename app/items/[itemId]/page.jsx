@@ -154,7 +154,11 @@ export default function ItemIdPage() {
               </FormItem>
             )}
           />
-          <Button className="w-full" type="submit">
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={form.formState.isSubmitted}
+          >
             Submit
           </Button>
         </form>

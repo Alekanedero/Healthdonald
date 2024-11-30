@@ -1,16 +1,16 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 
 export const getItems = async (category) => {
-  const docRef = collection(db, "items");
+  const itemsCollections = collection(db, "items");
 
-  const docSnap = await getDocs(docRef);
+  const itemsResult = await getDocs(itemsCollections);
 
   const data = [];
-  docSnap.forEach((d) => {
+  itemsResult.forEach((item) => {
     data.push({
-      id: d.id,
-      ...d.data(),
+      id: item.id,
+      ...item.data(),
     });
   });
 

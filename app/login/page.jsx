@@ -28,7 +28,7 @@ const LoginPage = () => {
           height={50}
         />
       </div>
-      <div className="absolute right-2 bottom-2 rotate-12">
+      <div className="absolute bottom-2 right-2 rotate-12">
         <Image
           src="/categories/dessert.png"
           alt="dessert"
@@ -36,7 +36,7 @@ const LoginPage = () => {
           height={50}
         />
       </div>
-      <div className="absolute left-2 bottom-2 -rotate-12">
+      <div className="absolute bottom-2 left-2 -rotate-12">
         <Image src="/categories/fries.png" alt="fries" width={50} height={50} />
       </div>
       <h1 className="text-2xl font-bold ">Welcome to Healthdonald !</h1>
