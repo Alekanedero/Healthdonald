@@ -4,17 +4,26 @@ import { useCartStore, useCartPrice } from "@/lib/store/use-cart-store";
 import { formatPrice } from "@/lib/format-price";
 import { Button } from "@/components/ui/button";
 import { Trash2, Minus, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const FooterCart = () => {
   const [open, setOpen] = useState(false);
 
   const cart = useCartStore();
   const price = useCartPrice();
-  console.log(cart);
+
+  useEffect(() => {
+    if (Object.keys(cart.items).length === 0) {
+      setOpen(false);
+    }
+  }, [cart.items]);
+
+  if (Object.keys(cart.items).length === 0) {
+    return null;
+  }
 
   return (
-    <div className=" fixed inset-x-0 bottom-0 m-auto max-w-md gap-4 rounded-t-xl border-x border-t bg-card p-4 pt-8">
+    <div className=" fixed inset-x-0 bottom-0 m-auto max-w-md gap-4 rounded-t-xl border-x border-t bg-card p-4 pt-10">
       <Button
         className="absolute inset-x-4 top-0 hover:bg-transparent"
         variant="ghost"

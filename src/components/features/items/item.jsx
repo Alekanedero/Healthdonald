@@ -2,12 +2,15 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format-price";
 import { useCartStore } from "@/lib/store/use-cart-store";
-import { Minus } from "lucide-react";
-import { Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 
 export const Item = ({ item }) => {
   return (
-    <div className={cn("relative rounded-md border p-3 shadow-inner")}>
+    <div
+      className={cn(
+        "relative rounded-md border p-3 shadow-inner h-fit flex flex-col"
+      )}
+    >
       <p className="absolute right-2 top-2 font-mono">
         {formatPrice(item.price)}
       </p>
@@ -18,9 +21,11 @@ export const Item = ({ item }) => {
         className="aspect-square w-full rounded-md object-contain"
       />
       {/* eslint-enable */}
-      <p>{item.name}</p>
-      <div className="flex items-end justify-end">
-        <CardButton item={item} />
+      <div className="flex flex-1 flex-col">
+        <p className="pb-2 text-sm">{item.name}</p>
+        <div className="mt-auto flex justify-end">
+          <CardButton item={item} />
+        </div>
       </div>
     </div>
   );

@@ -5,7 +5,8 @@ import { useUserStore } from "@/lib/store/use-user-store";
 import LoginPage from "./login/page";
 import { useRouter } from "next/navigation";
 import { ItemsList } from "@/components/features/items/items-List";
-import { FooterCart } from "@/components/features/footer-cart/FooterCart";
+import { FooterCart } from "@/components/features/footer-cart/footer-cart";
+import { CategoryList } from "@/components/features/categories/category-list";
 
 const AdminNew = () => {
   const adminLoggedIn = useUserStore((state) => state.isAdmin);
@@ -38,12 +39,13 @@ export default function Home() {
   }
 
   return (
-    <>
-      <main className="pb-8">
-        <AdminNew />
+    <main className="flex max-h-full flex-col">
+      <AdminNew />
+      <div className="flex flex-1 gap-4 overflow-hidden">
+        <CategoryList />
         <ItemsList />
-        <FooterCart />
-      </main>
-    </>
+      </div>
+      <FooterCart />
+    </main>
   );
 }

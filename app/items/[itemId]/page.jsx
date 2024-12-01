@@ -66,7 +66,6 @@ export default function ItemIdPage() {
       category: values.category,
       price: values.price * 100,
       image: values.image,
-      id: id,
     });
     console.log(values);
     router.push("/");
@@ -109,7 +108,7 @@ export default function ItemIdPage() {
                   </FormControl>
                   <SelectContent>
                     {CATEGORIES.map((category) => (
-                      <SelectItem key={category.id} value={category.title}>
+                      <SelectItem key={category.id} value={category.id}>
                         <div className="flex items-center gap-2">
                           <Image
                             src={category.logo}

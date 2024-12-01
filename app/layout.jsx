@@ -29,11 +29,11 @@ export default function RootLayout({ children }) {
           geistSans.variable,
           geistMono.variable,
           "antialiased",
-          "h-full bg-white dark:bg-black"
+          "h-full"
         )}
       >
         <Toaster />
-        <div className="m-auto flex max-h-full min-h-full max-w-md flex-col border-x ">
+        <div className="relative m-auto flex max-h-full min-h-full max-w-md flex-col gap-2 border-x py-2">
           <Header />
           <div className="flex-1 pt-2">{children}</div>
           <Footer />
