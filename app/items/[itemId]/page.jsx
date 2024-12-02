@@ -1,16 +1,16 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -18,150 +18,180 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES } from "@/lib/category-data";
 import { ImageInput } from "@/components/features/images/Image-Input";
-import Image from "next/image";
+import { CATEGORIES } from "@/lib/category-data";
 import { getId } from "@/lib/get-id";
+import { getItem } from "@/lib/items/get-item";
 import { setItem } from "@/lib/items/set-items";
-import { useRouter } from "next/navigation";
 import { useUserStore } from "@/lib/store/use-user-store";
-import { Alert, AlertTitle } from "@/components/ui/alert";
-import { X } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader, User } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import useSWR, { mutate } from "swr";
+import { z } from "zod";
+import { use } from "react";
 
 const formSchema = z.object({
-  id: z.string().min(2).max(50),
+  id: z.string().min(2).max(50).optional(),
   name: z.string().min(2).max(50),
   category: z.string().min(2).max(50),
   price: z.coerce.number().min(0).max(1000),
   image: z.any(),
 });
 
-export default function ItemIdPage() {
-  const isAdmin = useUserStore((state) => state.isAdmin);
-  const router = useRouter();
+// itemId === new => Créer un nouvelle item
+// itemId = récupère cette item pour le modifier !
+export default function ItemIdPage({ params }) {
+  const resolvedParams = use(params);
+  const isAdmin = useUserStore((s) => s.isAdmin);
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      id: "xx",
-    },
-  });
+  const { data, isLoading } = useSWR(
+    `/item/${resolvedParams.itemId}`,
+    async () => {
+      if (resolvedParams.itemId === "new") return null;
+      return getItem(resolvedParams.itemId);
+    }
+  );
+
+  // console.log({ data, isLoading, params });
 
   if (!isAdmin) {
     return (
       <Alert>
-        <X size={12} />
-        <AlertTitle>You can't create item</AlertTitle>
+        <User size={12} />
+        <AlertTitle>You are not authorized to view this page.</AlertTitle>
+        <AlertDescription>Only admin can.</AlertDescription>
       </Alert>
     );
   }
 
-  // pour debeugger les erreurs
-  // console.log(form.formState.errors);
+  if (isLoading) {
+    return <Loader className="animate-spin" />;
+  }
 
-  async function onSubmit(values) {
-    const id = getId(values.name);
-    await setItem(id, {
+  return (
+    <div className="mx-4">
+      <h1 className="text-2xl font-bold">Create item</h1>
+      <ItemForm defaultItem={data} />
+    </div>
+  );
+}
+
+const ItemForm = ({ defaultItem }) => {
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: defaultItem
+      ? {
+          ...defaultItem,
+          price: defaultItem.price / 100,
+        }
+      : null,
+    shouldUnregister: false,
+  });
+
+  const router = useRouter();
+
+  function onSubmit(values) {
+    const id = defaultItem ? defaultItem.id : getId(values.name);
+    setItem(id, {
       name: values.name,
-      category: values.category,
       price: values.price * 100,
+      category: values.category,
       image: values.image,
     });
-    console.log(values);
+    mutate((key) => typeof key === "string" && key.startsWith("/item"));
+    mutate(`/item/${id}`);
     router.push("/");
   }
 
   return (
-    <div className="flex flex-col items-center pt-4">
-      <h1 className="text-2xl font-bold ">Add an item</h1>
-      <Form {...form} className="m-auto w-full">
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-6 p-4"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a  category" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {CATEGORIES.map((c) => (
+                    <SelectItem value={c.id} key={c.id}>
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={c.logo}
+                          width={24}
+                          height={24}
+                          alt={c.title}
+                        />
+                        <span>{c.title}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="Enter item price"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Image</FormLabel>
+              <FormControl>
+                <ImageInput image={field.value} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          className="w-full"
+          disabled={form.formState.isSubmitting}
+          type="submit"
         >
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter item name" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {CATEGORIES.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src={category.logo}
-                            alt={category.title}
-                            width={32}
-                            height={32}
-                          />
-                          <p>{category.title}</p>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Price</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter item price"
-                    type="number"
-                    {...field}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Image URL</FormLabel>
-                <FormControl>
-                  <ImageInput image={field.value} onChange={field.onChange} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <Button
-            className="w-full"
-            type="submit"
-            disabled={form.formState.isSubmitted}
-          >
-            Submit
-          </Button>
-        </form>
-      </Form>
-    </div>
+          Submit
+        </Button>
+      </form>
+    </Form>
   );
-}
+};

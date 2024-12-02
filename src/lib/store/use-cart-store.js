@@ -71,5 +71,5 @@ export const useCartPrice = () => {
 };
 
 export const clearCart = () => {
-  return useCartStore.setState({ items: {} });
+  useCartStore.setState({ items: {} });
 };

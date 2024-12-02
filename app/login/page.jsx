@@ -6,9 +6,17 @@ import { useUserStore } from "@/lib/store/use-user-store";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const LoginPage = () => {
+export default function LoginPage() {
   const userStore = useUserStore();
   const router = useRouter();
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const username = formData.get("username");
+    userStore.login(username);
+    router.push("/");
+  };
 
   return (
     <>
@@ -47,20 +55,11 @@ const LoginPage = () => {
         </div>
         <h1 className="text-2xl font-bold ">Welcome to Healthdonald !</h1>
         <p>Login first to access our application.</p>
-        <form
-          action={(formData) => {
-            const username = formData.get("username");
-            userStore.login(username);
-            router.push("/");
-          }}
-          className="flex items-center gap-2"
-        >
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
           <Input type="text" placeholder="Enter your name" name="username" />
           <Button type="submit">Login</Button>
         </form>
       </div>
     </>
   );
-};
-
-export default LoginPage;
+}
