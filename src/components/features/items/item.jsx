@@ -7,6 +7,20 @@ import { useCartStore } from "@/lib/store/use-cart-store";
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Edit } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteItem } from "@/lib/items/delete-item";
+import toast from "react-hot-toast";
+import { mutate } from "swr";
 
 export const Item = ({ item, className }) => {
   const adminEnabled = useAdminStore((s) => s.adminEnabled);
@@ -25,9 +39,7 @@ export const Item = ({ item, className }) => {
           >
             <Edit size={12} />
           </Link>
-          <Button variant="outline" size="sm">
-            <Trash2 size={12} />
-          </Button>
+          <DeleteButtton item={item} />
         </div>
       ) : null}
       <p className="absolute right-2 top-2 font-mono">
@@ -47,6 +59,38 @@ export const Item = ({ item, className }) => {
         <CardButton item={item} />
       </div>
     </div>
+  );
+};
+
+const DeleteButtton = ({ item }) => {
+  const onDelete = async () => {
+    await deleteItem(item);
+    toast.success("Item was deleted");
+    mutate((key) => typeof key === "string" && key.startsWith("/items"));
+  };
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Trash2 size={12} />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            You will delete the item id {item.id}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure ? This action is irreversible.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={onDelete}>Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 
