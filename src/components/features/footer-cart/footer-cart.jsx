@@ -2,9 +2,11 @@
 
 import { useCartStore, useCartPrice } from "@/lib/store/use-cart-store";
 import { formatPrice } from "@/lib/format-price";
-import { Button } from "@/components/ui/button";
-import { Trash2, Minus, ChevronDown, ChevronUp } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { ItemsCart } from "../cart/items-cart";
 
 export const FooterCart = () => {
   const [open, setOpen] = useState(false);
@@ -32,54 +34,18 @@ export const FooterCart = () => {
       >
         {open ? <ChevronDown size={12} /> : <ChevronUp size={12} />}
       </Button>
-      {open ? (
-        <>
-          <div className="flex items-center gap-4">
-            <h2 className="text-lg font-bold">Cart</h2>
-            <p className="ml-auto font-mono font-bold">{formatPrice(price)}</p>
-          </div>
-          <div className="flex max-h-32 flex-col gap-2 overflow-y-auto py-2">
-            {Object.values(cart.items).map((cartItem) => (
-              <CartLineItem
-                quantity={cartItem.quantity}
-                item={cartItem.item}
-                key={cartItem.item.id}
-              />
-            ))}
-          </div>
-        </>
-      ) : null}
+      {open ? <ItemsCart className="max-h-32" /> : null}
       <div className="flex items-center gap-2">
-        <Button size="sm" className="w-full">
+        <Link
+          href="/checkout"
+          className={buttonVariants({ size: "sm", className: "w-full" })}
+        >
           Checkout
-        </Button>
+        </Link>
         {!open ? (
           <p className="ml-auto font-mono font-bold">{formatPrice(price)}</p>
         ) : null}
       </div>
-    </div>
-  );
-};
-
-const CartLineItem = ({ item, quantity }) => {
-  const removeItem = useCartStore((s) => s.removeItem);
-  return (
-    <div className="flex items-center gap-4">
-      <div className="relative size-14 rounded-md border bg-accent/50 p-1">
-        {/* eslint-disable */}
-        <img src={item.image} alt={`${item.name}'s image`} />
-        {/* eslint-enable */}
-        <span className=" absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full border bg-gray-400 text-xs">
-          {quantity}
-        </span>
-      </div>
-      <p className="font-bold">{item.name}</p>
-      <p className="ml-auto font-mono text-sm">
-        {formatPrice(item.price * quantity)}
-      </p>
-      <Button size="sm" variant="outline" onClick={() => removeItem(item)}>
-        {quantity === 1 ? <Trash2 size={12} /> : <Minus size={12} />}
-      </Button>
     </div>
   );
 };

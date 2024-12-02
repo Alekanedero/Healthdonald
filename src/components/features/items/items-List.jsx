@@ -15,7 +15,7 @@ export const ItemsList = () => {
   }
 
   return (
-    <div className="mr-4 grid max-h-full grid-cols-2 gap-3 overflow-x-auto pb-16">
+    <div className="mr-4 grid max-h-full grid-cols-2 gap-3 overflow-x-auto pb-10">
       {data?.map((item) => (
         <Item item={item} key={item.id} />
       ))}

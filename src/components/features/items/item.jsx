@@ -4,11 +4,12 @@ import { formatPrice } from "@/lib/format-price";
 import { useCartStore } from "@/lib/store/use-cart-store";
 import { Minus, Plus } from "lucide-react";
 
-export const Item = ({ item }) => {
+export const Item = ({ item, className }) => {
   return (
     <div
       className={cn(
-        "relative rounded-md border p-3 shadow-inner h-fit flex flex-col"
+        "relative rounded-md border p-3 shadow-inner h-fit flex flex-col",
+        className
       )}
     >
       <p className="absolute right-2 top-2 font-mono">
