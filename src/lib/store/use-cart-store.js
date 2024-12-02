@@ -69,3 +69,7 @@ export const useCartPrice = () => {
     }, 0);
   });
 };
+
+export const clearCart = () => {
+  return useCartStore.setState({ items: {} });
+};

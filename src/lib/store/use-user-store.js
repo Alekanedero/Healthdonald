@@ -16,7 +16,7 @@ export const useUserStore = create(
       },
     }),
     {
-      name: "user-store", // nom de la clé de stockage
+      name: "user-store",
     }
   )
 );
